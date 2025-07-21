@@ -6,6 +6,9 @@ let score = 0;
 let timer;
 let countdown = 10;
 
+// تحميل صوت التحذير
+const warningSound = new Audio("https://www.soundjay.com/button/sounds/beep-07.mp3");
+
 function startQuestion() {
   if (current >= questions.length) {
     showResult();
@@ -22,6 +25,7 @@ function startQuestion() {
   shuffledOptions.forEach(opt => {
     const btn = document.createElement("button");
     btn.innerText = opt;
+    btn.className = "option-btn";
     btn.onclick = () => {
       clearInterval(timer);
       if (opt === q.correct) score++;
@@ -32,10 +36,24 @@ function startQuestion() {
   });
 
   countdown = 10;
-  document.getElementById("timer").innerText = countdown;
+  const timerEl = document.getElementById("timer");
+  timerEl.innerText = countdown;
+  timerEl.style.color = "#d35400";
+
   timer = setInterval(() => {
     countdown--;
-    document.getElementById("timer").innerText = countdown;
+    timerEl.innerText = countdown;
+
+    if (countdown === 3) {
+      warningSound.play(); // تشغيل صوت
+    }
+
+    if (countdown <= 3) {
+      timerEl.style.color = "red";
+    } else {
+      timerEl.style.color = "#d35400";
+    }
+
     if (countdown === 0) {
       clearInterval(timer);
       current++;
@@ -47,7 +65,6 @@ function startQuestion() {
 }
 
 function showResult() {
-  // إخفاء محتوى الأسئلة والموقت
   document.getElementById("questionBox").style.display = "none";
   document.getElementById("optionsBox").style.display = "none";
   document.getElementById("timer").style.display = "none";
@@ -58,14 +75,12 @@ function showResult() {
     انتهت الأسئلة! نتيجتك: ${score} من ${questions.length}
   </div>`;
 
-  // تحديث بيانات المتسابق في قائمة المشاركين (participants) في localStorage
   let contestantData = JSON.parse(localStorage.getItem('currentContestant'));
   if (contestantData) {
     contestantData.score = score;
     contestantData.time = contestantData.time || new Date().toLocaleString();
 
     let allParticipants = JSON.parse(localStorage.getItem('contestantResults')) || [];
-    // تحديث إذا موجود مسبقاً أو إضافة جديد
     const index = allParticipants.findIndex(p => p.name === contestantData.name && p.phone === contestantData.phone);
     if (index !== -1) {
       allParticipants[index] = contestantData;
@@ -75,7 +90,6 @@ function showResult() {
     localStorage.setItem('contestantResults', JSON.stringify(allParticipants));
   }
 
-  // عرض النتيجة 5 ثواني ثم العودة للصفحة الرئيسية
   setTimeout(() => {
     window.location.href = "index.html";
   }, 5000);
