@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="header">
-  <img src="https://uploads.onecompiler.io/43r6ub8mz/43r6u5fru/m1.jpg" class="header-img" alt="شعار" />
+  <img src="https://uploads.onecompiler.io/43r6ub8mz/43r6u5fru/WhatsApp%20Image%202025-07-20%20at%2015.09.26_9c297a66.jpg" class="header-img" alt="شعار" />
   <h1>تحدي الثلاثين - تسجيل الدخول</h1>
 </div>
 
@@ -22,23 +22,23 @@
 
   <form id="contestant-form" style="display:none;">
     <label for="cname">اسم المتسابق:</label>
-    <input type="text" id="cname" required placeholder="اكتب اسمك" />
+    <input type="text" id="cname" required placeholder="اكتب اسمك" class="big-input" />
 
     <label for="cphone">رقم الهاتف:</label>
-    <input type="tel" id="cphone" required placeholder="اكتب رقم هاتفك" />
+    <input type="tel" id="cphone" required placeholder="اكتب رقم هاتفك" pattern="\d{10}" maxlength="10" inputmode="numeric" />
 
     <label for="cstudentid">الرقم الجامعي:</label>
-    <input type="text" id="cstudentid" required placeholder="اكتب رقمك الجامعي" />
+    <input type="text" id="cstudentid" required placeholder="اكتب رقمك الجامعي" pattern="\d{10}" maxlength="10" inputmode="numeric" class="big-input" />
 
     <input type="submit" value="تسجيل وبدء المسابقة" />
   </form>
 
   <form id="admin-form" style="display:none;">
     <label for="admin-username">اسم المستخدم:</label>
-    <input type="text" id="admin-username" required placeholder="ادخل اسم المستخدم" />
+    <input type="text" id="admin-username" required placeholder="ادخل اسم المستخدم" class="big-input" />
     
     <label for="admin-password">كلمة المرور:</label>
-    <input type="password" id="admin-password" required placeholder="ادخل كلمة المرور" />
+    <input type="text" id="admin-password" required placeholder="ادخل كلمة المرور" class="big-input" />
 
     <input type="submit" value="دخول المسؤول" />
   </form>
@@ -77,11 +77,7 @@
     }
 
     const entryTime = new Date().toLocaleString();
-
-    // حفظ بيانات المتسابق الحالي في localStorage (بدون نتيجة بعد)
     localStorage.setItem('currentContestant', JSON.stringify({ name, phone, universityId: studentId, time: entryTime }));
-
-    // الانتقال إلى صفحة المتسابق
     window.location.href = 'contestant.html';
   };
 
