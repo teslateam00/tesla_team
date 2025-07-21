@@ -14,10 +14,10 @@ body {
 }
 
 .header-img {
-  width: 200px;        /* حجم صغير مناسب */
+  width: 200px;
   height: auto;
   display: block;
-  margin: 0 auto;      /* لوضع الصورة بالوسط */
+  margin: 0 auto;
 }
 
 h1 {
@@ -95,13 +95,13 @@ li {
   display: block;
   width: 100%;
   padding: 12px;
-  margin: 8px 0;
+  margin: 16px 0; /* مسافة أكبر */
   background-color: #fff3e0;
   border: 2px solid #ffa94d;
   color: #333;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   transition: all 0.3s ease;
 }
 
@@ -118,4 +118,41 @@ li {
 .incorrect {
   background-color: #f7a3a3 !important;
   border-color: #e53935 !important;
+}
+
+/* إضافات جديدة */
+
+.quiz-container {
+  position: relative;
+  padding: 20px;
+  text-align: center;
+}
+
+.question-box {
+  background-color: #fff3cd;
+  border: 2px solid #ffeeba;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  position: relative;
+}
+
+.timer-box {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #fff;
+  padding: 10px 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  color: #d35400;
 }
