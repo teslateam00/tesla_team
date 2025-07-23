@@ -2,8 +2,8 @@ let currentQuestion = 0;
 let score = 0;
 let selectedAnswers = [];
 
-const questionsCopy = [...questions];
-const shuffledQuestions = questionsCopy.sort(() => 0.5 - Math.random()).slice(0, 10); // 10 random questions
+const questionsCopy = [...window.questions];
+const shuffledQuestions = questionsCopy.sort(() => 0.5 - Math.random()).slice(0, 10);
 
 function showQuestion() {
     const question = shuffledQuestions[currentQuestion];
@@ -74,12 +74,7 @@ function endQuiz() {
 function sendDataToSheet(name, phone, uniId, score) {
     fetch("https://script.google.com/macros/s/AKfycbz0MhM5kTUFGBXRoq3IgvJPD6ZrXqSlWVJOrizizC7R5WNxkeLxW0erL-dh9WlvRRoQ/exec", {
         method: "POST",
-        body: JSON.stringify({
-            name: name,
-            phone: phone,
-            uniId: uniId,
-            score: score
-        }),
+        body: JSON.stringify({ name, phone, uniId, score }),
         headers: {
             "Content-Type": "application/json"
         }
