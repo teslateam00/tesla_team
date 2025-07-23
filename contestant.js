@@ -1,26 +1,26 @@
-let questions = JSON.parse(localStorage.getItem("questions")) || [];
-questions = shuffleArray(questions).slice(0, 10);
+import questions from './questions.js';
+
+let quizQuestions = shuffleArray(questions).slice(0, 10);
 
 let current = 0;
 let score = 0;
 let timer;
 let countdown = 10;
 
-// تحميل صوت التحذير
 const warningSound = new Audio("https://www.soundjay.com/button/sounds/beep-07.mp3");
 
 function startQuestion() {
-  if (current >= questions.length) {
+  if (current >= quizQuestions.length) {
     showResult();
     return;
   }
 
-  const q = questions[current];
+  const q = quizQuestions[current];
   document.getElementById("questionBox").innerText = q.question;
 
   const optionsBox = document.getElementById("optionsBox");
   optionsBox.innerHTML = "";
-  const shuffledOptions = shuffleArray([...q.options]);
+  const shuffledOptions = shuffleArray([...q.answers]);
 
   shuffledOptions.forEach(opt => {
     const btn = document.createElement("button");
@@ -61,7 +61,7 @@ function startQuestion() {
     }
   }, 1000);
 
-  document.getElementById("progress").innerText = `السؤال ${current + 1} من ${questions.length}`;
+  document.getElementById("progress").innerText = `السؤال ${current + 1} من ${quizQuestions.length}`;
 }
 
 function showResult() {
@@ -72,7 +72,7 @@ function showResult() {
 
   const quizContainer = document.querySelector(".quiz-container");
   quizContainer.innerHTML = `<div class="result-box" style="font-size: 24px; color: #ff7700; text-align: center; margin-top: 40px;">
-    انتهت الأسئلة! نتيجتك: ${score} من ${questions.length}
+    انتهت الأسئلة! نتيجتك: ${score} من ${quizQuestions.length}
   </div>`;
 
   let contestantData = JSON.parse(localStorage.getItem('currentContestant'));
@@ -89,7 +89,6 @@ function showResult() {
     }
     localStorage.setItem('contestantResults', JSON.stringify(allParticipants));
 
-    // 🔴 إرسال البيانات إلى Google Sheet
     fetch("https://script.google.com/macros/s/AKfycbyp4f65IwRjSRcD-1uYpO1ep0ihgEiJkrBGadyOMSYw215aoGPmhDnusFMEb05rqEmYDQ/exec", {
       method: "POST",
       body: JSON.stringify(contestantData),
