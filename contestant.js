@@ -45,7 +45,7 @@ function startQuestion() {
     timerEl.innerText = countdown;
 
     if (countdown === 3) {
-      warningSound.play(); // تشغيل صوت
+      warningSound.play();
     }
 
     if (countdown <= 3) {
@@ -88,6 +88,17 @@ function showResult() {
       allParticipants.push(contestantData);
     }
     localStorage.setItem('contestantResults', JSON.stringify(allParticipants));
+
+    // 🔴 إرسال البيانات إلى Google Sheet
+    fetch("https://script.google.com/macros/s/AKfycbyp4f65IwRjSRcD-1uYpO1ep0ihgEiJkrBGadyOMSYw215aoGPmhDnusFMEb05rqEmYDQ/exec", {
+      method: "POST",
+      body: JSON.stringify(contestantData),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => console.log("✅ تم الإرسال إلى Google Sheet"))
+    .catch(err => console.error("❌ فشل الإرسال إلى Google Sheet", err));
   }
 
   setTimeout(() => {
