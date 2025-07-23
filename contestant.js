@@ -1,116 +1,110 @@
-import questions from './questions.js';
-
-let quizQuestions = shuffleArray(questions).slice(0, 10);
-
-let current = 0;
+let currentQuestion = 0;
 let score = 0;
-let timer;
-let countdown = 10;
+let selectedAnswers = [];
 
-const warningSound = new Audio("https://www.soundjay.com/button/sounds/beep-07.mp3");
+const questionsCopy = [...questions];
+const shuffledQuestions = questionsCopy.sort(() => 0.5 - Math.random()).slice(0, 10); // 10 random questions
 
-function startQuestion() {
-  if (current >= quizQuestions.length) {
-    showResult();
-    return;
-  }
+function showQuestion() {
+    const question = shuffledQuestions[currentQuestion];
+    document.getElementById("question").innerText = question.question;
 
-  const q = quizQuestions[current];
-  document.getElementById("questionBox").innerText = q.question;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
 
-  const optionsBox = document.getElementById("optionsBox");
-  optionsBox.innerHTML = "";
-  const shuffledOptions = shuffleArray([...q.answers]);
+    question.answers.forEach(answer => {
+        const btn = document.createElement("button");
+        btn.innerText = answer;
+        btn.classList.add("answer-btn");
+        btn.addEventListener("click", () => selectAnswer(answer));
+        answersDiv.appendChild(btn);
+    });
 
-  shuffledOptions.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.innerText = opt;
-    btn.className = "option-btn";
-    btn.onclick = () => {
-      clearInterval(timer);
-      if (opt === q.correct) score++;
-      current++;
-      startQuestion();
-    };
-    optionsBox.appendChild(btn);
-  });
-
-  countdown = 10;
-  const timerEl = document.getElementById("timer");
-  timerEl.innerText = countdown;
-  timerEl.style.color = "#d35400";
-
-  timer = setInterval(() => {
-    countdown--;
-    timerEl.innerText = countdown;
-
-    if (countdown === 3) {
-      warningSound.play();
-    }
-
-    if (countdown <= 3) {
-      timerEl.style.color = "red";
-    } else {
-      timerEl.style.color = "#d35400";
-    }
-
-    if (countdown === 0) {
-      clearInterval(timer);
-      current++;
-      startQuestion();
-    }
-  }, 1000);
-
-  document.getElementById("progress").innerText = `السؤال ${current + 1} من ${quizQuestions.length}`;
+    document.getElementById("next-btn").style.display = "none";
 }
 
-function showResult() {
-  document.getElementById("questionBox").style.display = "none";
-  document.getElementById("optionsBox").style.display = "none";
-  document.getElementById("timer").style.display = "none";
-  document.getElementById("progress").style.display = "none";
+function selectAnswer(answer) {
+    const question = shuffledQuestions[currentQuestion];
+    const buttons = document.querySelectorAll(".answer-btn");
 
-  const quizContainer = document.querySelector(".quiz-container");
-  quizContainer.innerHTML = `<div class="result-box" style="font-size: 24px; color: #ff7700; text-align: center; margin-top: 40px;">
-    انتهت الأسئلة! نتيجتك: ${score} من ${quizQuestions.length}
-  </div>`;
+    buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.innerText === question.correct) {
+            btn.classList.add("correct");
+        } else if (btn.innerText === answer) {
+            btn.classList.add("wrong");
+        }
+    });
 
-  let contestantData = JSON.parse(localStorage.getItem('currentContestant'));
-  if (contestantData) {
-    contestantData.score = score;
-    contestantData.time = contestantData.time || new Date().toLocaleString();
-
-    let allParticipants = JSON.parse(localStorage.getItem('contestantResults')) || [];
-    const index = allParticipants.findIndex(p => p.name === contestantData.name && p.phone === contestantData.phone);
-    if (index !== -1) {
-      allParticipants[index] = contestantData;
-    } else {
-      allParticipants.push(contestantData);
+    if (answer === question.correct) {
+        score++;
     }
-    localStorage.setItem('contestantResults', JSON.stringify(allParticipants));
 
-    fetch("https://script.google.com/macros/s/AKfycbyp4f65IwRjSRcD-1uYpO1ep0ihgEiJkrBGadyOMSYw215aoGPmhDnusFMEb05rqEmYDQ/exec", {
-      method: "POST",
-      body: JSON.stringify(contestantData),
-      headers: {
-        "Content-Type": "application/json"
-      }
+    selectedAnswers.push({ question: question.question, answer, correct: question.correct });
+
+    document.getElementById("next-btn").style.display = "block";
+}
+
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < shuffledQuestions.length) {
+        showQuestion();
+    } else {
+        endQuiz();
+    }
+}
+
+function endQuiz() {
+    document.getElementById("quiz-container").innerHTML = `
+        <h2>تم إنهاء الاختبار</h2>
+        <p>علامتك: ${score} من ${shuffledQuestions.length}</p>
+    `;
+
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+    const uniId = document.getElementById("universityId").value;
+
+    if (name && phone && uniId) {
+        sendDataToSheet(name, phone, uniId, score);
+    } else {
+        alert("يرجى إدخال جميع المعلومات المطلوبة قبل بدء الاختبار.");
+    }
+}
+
+function sendDataToSheet(name, phone, uniId, score) {
+    fetch("https://script.google.com/macros/s/AKfycbz0MhM5kTUFGBXRoq3IgvJPD6ZrXqSlWVJOrizizC7R5WNxkeLxW0erL-dh9WlvRRoQ/exec", {
+        method: "POST",
+        body: JSON.stringify({
+            name: name,
+            phone: phone,
+            uniId: uniId,
+            score: score
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
     })
-    .then(res => console.log("✅ تم الإرسال إلى Google Sheet"))
-    .catch(err => console.error("❌ فشل الإرسال إلى Google Sheet", err));
-  }
-
-  setTimeout(() => {
-    window.location.href = "index.html";
-  }, 5000);
+    .then(response => response.text())
+    .then(result => {
+        console.log("تم إرسال البيانات بنجاح:", result);
+    })
+    .catch(error => {
+        console.error("حدث خطأ أثناء الإرسال:", error);
+    });
 }
 
-function shuffleArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+document.getElementById("start-btn").addEventListener("click", () => {
+    const name = document.getElementById("name").value;
+    const phone = document.getElementById("phone").value;
+    const uniId = document.getElementById("universityId").value;
 
-startQuestion();
+    if (name && phone && uniId) {
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("quiz-container").style.display = "block";
+        showQuestion();
+    } else {
+        alert("يرجى ملء جميع الحقول للمتابعة.");
+    }
+});
+
+document.getElementById("next-btn").addEventListener("click", nextQuestion);
