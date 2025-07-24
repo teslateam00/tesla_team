@@ -1,12 +1,10 @@
-let questions = JSON.parse(localStorage.getItem("questions")) || [];
-questions = shuffleArray(questions).slice(0, 10);
+let questions = shuffleArray(window.questions).slice(0, 10);
 
 let current = 0;
 let score = 0;
 let timer;
 let countdown = 10;
 
-// تحميل صوت التحذير
 const warningSound = new Audio("https://www.soundjay.com/button/sounds/beep-07.mp3");
 
 function startQuestion() {
@@ -20,7 +18,7 @@ function startQuestion() {
 
   const optionsBox = document.getElementById("optionsBox");
   optionsBox.innerHTML = "";
-  const shuffledOptions = shuffleArray([...q.options]);
+  const shuffledOptions = shuffleArray([...q.answers]);
 
   shuffledOptions.forEach(opt => {
     const btn = document.createElement("button");
@@ -45,7 +43,7 @@ function startQuestion() {
     timerEl.innerText = countdown;
 
     if (countdown === 3) {
-      warningSound.play(); // تشغيل صوت
+      warningSound.play();
     }
 
     if (countdown <= 3) {
@@ -61,7 +59,7 @@ function startQuestion() {
     }
   }, 1000);
 
-  document.getElementById("progress").innerText = السؤال ${current + 1} من ${questions.length};
+  document.getElementById("progress").innerText = `السؤال ${current + 1} من ${questions.length}`;
 }
 
 function showResult() {
@@ -71,24 +69,11 @@ function showResult() {
   document.getElementById("progress").style.display = "none";
 
   const quizContainer = document.querySelector(".quiz-container");
-  quizContainer.innerHTML = <div class="result-box" style="font-size: 24px; color: #ff7700; text-align: center; margin-top: 40px;">
-    انتهت الأسئلة! نتيجتك: ${score} من ${questions.length}
-  </div>;
-
-  let contestantData = JSON.parse(localStorage.getItem('currentContestant'));
-  if (contestantData) {
-    contestantData.score = score;
-    contestantData.time = contestantData.time || new Date().toLocaleString();
-
-    let allParticipants = JSON.parse(localStorage.getItem('contestantResults')) || [];
-    const index = allParticipants.findIndex(p => p.name === contestantData.name && p.phone === contestantData.phone);
-    if (index !== -1) {
-      allParticipants[index] = contestantData;
-    } else {
-      allParticipants.push(contestantData);
-    }
-    localStorage.setItem('contestantResults', JSON.stringify(allParticipants));
-  }
+  quizContainer.innerHTML = `
+    <div class="result-box" style="font-size: 24px; color: #ff7700; text-align: center; margin-top: 40px;">
+      انتهت الأسئلة! نتيجتك: ${score} من ${questions.length}
+    </div>
+  `;
 
   setTimeout(() => {
     window.location.href = "index.html";
@@ -104,4 +89,3 @@ function shuffleArray(array) {
 }
 
 startQuestion();
-
