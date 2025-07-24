@@ -18,8 +18,10 @@
     <div id="progress" class="progress-box"></div>
   </div>
 
-  <script src="questions.js"></script>
-  <script src="contestant.js"></script>
+  <script type="module">
+    import questions from './questions.js';
+    window.questions = questions;
+    import './contestant.js';
+  </script>
 </body>
 </html>
-
