@@ -18,10 +18,9 @@
     <div id="progress" class="progress-box"></div>
   </div>
 
-  <script type="module">
-    import questions from './questions.js';
-    window.questions = questions;
-    import './contestant.js';
-  </script>
+  <!-- ✅ تحميل الأسئلة من ملف خارجي -->
+  <script src="questions.js"></script>
+  <!-- ✅ تحميل ملف منطق عرض الأسئلة -->
+  <script src="contestant.js"></script>
 </body>
 </html>
