@@ -18,6 +18,7 @@ function startQuestion() {
 
   const optionsBox = document.getElementById("optionsBox");
   optionsBox.innerHTML = "";
+
   const shuffledOptions = shuffleArray([...q.answers]);
 
   shuffledOptions.forEach(opt => {
@@ -42,15 +43,9 @@ function startQuestion() {
     countdown--;
     timerEl.innerText = countdown;
 
-    if (countdown === 3) {
-      warningSound.play();
-    }
-
-    if (countdown <= 3) {
-      timerEl.style.color = "red";
-    } else {
-      timerEl.style.color = "#d35400";
-    }
+    if (countdown === 3) warningSound.play();
+    if (countdown <= 3) timerEl.style.color = "red";
+    else timerEl.style.color = "#d35400";
 
     if (countdown === 0) {
       clearInterval(timer);
